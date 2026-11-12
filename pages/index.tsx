@@ -92,206 +92,412 @@ export default function Home({
 }: Props) {
   const pages = chunkArray(students, 4);
 
+  const SCHOOL_LOGO = 'https://okiedokie-erp-images.s3.ap-south-1.amazonaws.com/GNAVLKB/2026/04/logo/c126d4d689be2ad475ee-aeb9f3fd1d398ac5eedc-GITA_NIKETAN_AWASIYA_VIDYALAYA-logo%20(1).png';
+  const FAVICON = 'https://okiedokie-erp-images.s3.ap-south-1.amazonaws.com/Okie%20Dokie/2025/12/sourceURL/26aebcbe10f4ac5a3e8b-611ed1b9032568edd4f3-Okie_Dokie_App_icon__2___2_-removebg-preview.png';
+
   return (
     <>
       <Head>
         <title>Attendance Sheet – {schoolName}</title>
+        <link rel="icon" href={FAVICON} type="image/png" />
         <style>{`
+          * { box-sizing: border-box; }
+
+          /* ── Print ─────────────────────────────── */
           @media print {
             .no-print { display: none !important; }
-            body { margin: 0; }
+            body { margin: 0; background: #fff; }
+            .page-wrap { background: transparent; padding: 0; }
+            .page { margin: 0; box-shadow: none; border-radius: 0; }
             .page-break { page-break-after: always; }
           }
-          body { font-family: Arial, sans-serif; background: #f5f5f5; }
-          .controls { padding: 20px; background: #fff; border-bottom: 1px solid #ddd; }
-          .controls button {
-            padding: 10px 24px;
-            background: #1a56db;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 15px;
-            cursor: pointer;
-            margin-right: 10px;
+
+          /* ── Base ───────────────────────────────── */
+          body {
+            font-family: 'Arial', sans-serif;
+            background: #0f172a;
+            margin: 0;
           }
-          .controls button:hover { background: #1240ab; }
-          .meta { color: #555; margin-left: 10px; font-size: 14px; }
+
+          /* ── Top bar ────────────────────────────── */
+          .topbar {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            padding: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+          }
+          .topbar-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+          }
+          .topbar-title {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .topbar-title span {
+            color: #93c5fd;
+            font-weight: 400;
+            font-size: 13px;
+            margin-left: 8px;
+          }
+          .topbar-actions { display: flex; gap: 10px; align-items: center; }
+          .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+          }
+          .btn-primary {
+            background: #2563eb;
+            color: #fff;
+          }
+          .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+          .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.15);
+          }
+          .btn-secondary:hover { background: rgba(255,255,255,0.18); }
+          .badge {
+            background: rgba(34,197,94,0.15);
+            border: 1px solid rgba(34,197,94,0.3);
+            color: #4ade80;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+          }
+          .badge-err {
+            background: rgba(239,68,68,0.15);
+            border-color: rgba(239,68,68,0.3);
+            color: #f87171;
+          }
+
+          /* ── Page wrap ──────────────────────────── */
+          .page-wrap {
+            background: #0f172a;
+            padding: 28px 16px 48px;
+          }
+
+          /* ── A4 page ────────────────────────────── */
           .page {
             width: 210mm;
             min-height: 297mm;
-            margin: 20px auto;
+            margin: 0 auto 24px;
             background: #fff;
-            padding: 12mm 10mm;
-            box-sizing: border-box;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10mm 10mm 8mm;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border-radius: 4px;
           }
-          .school-header { text-align: center; margin-bottom: 8px; }
-          .school-name { font-size: 16pt; font-weight: bold; letter-spacing: 1px; }
-          .school-addr { font-size: 10pt; }
-          .school-web { font-size: 9pt; }
-          .affiliation { font-size: 9pt; float: left; }
-          .exam-label { font-size: 9pt; float: right; }
-          .clear { clear: both; }
+
+          /* ── School header ──────────────────────── */
+          .school-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            border-bottom: 2px solid #1e3a5f;
+            padding-bottom: 6px;
+          }
+          .school-logo {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            flex-shrink: 0;
+          }
+          .school-info { text-align: center; flex: 1; }
+          .school-name { font-size: 15pt; font-weight: 900; letter-spacing: 0.5px; color: #1e3a5f; line-height: 1.2; }
+          .school-addr { font-size: 9pt; color: #334155; margin-top: 1px; }
+          .school-web { font-size: 8pt; color: #64748b; }
+
+          /* ── Meta row ───────────────────────────── */
+          .meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 8.5pt;
+            color: #475569;
+            margin: 4px 0 2px;
+          }
+
+          /* ── Sheet title ────────────────────────── */
           .sheet-title {
             text-align: center;
-            font-size: 14pt;
-            font-weight: bold;
-            margin: 6px 0;
-            text-decoration: underline;
+            font-size: 13pt;
+            font-weight: 800;
+            margin: 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #0f172a;
+            border-top: 1px solid #cbd5e1;
+            border-bottom: 1px solid #cbd5e1;
+            padding: 3px 0;
           }
-          .student-table { width: 100%; border-collapse: collapse; }
-          .student-row { border: 1px solid #000; }
-          .student-cell { vertical-align: top; padding: 5px; }
-          .student-left { width: 55%; border-right: 1px solid #000; }
-          .student-right { width: 45%; }
-          .field-row { margin-bottom: 3px; font-size: 9pt; }
-          .field-label { font-size: 8pt; color: #333; min-width: 85px; display: inline-block; }
-          .field-value { font-size: 9pt; font-weight: bold; border-bottom: 1px solid #aaa; display: inline-block; min-width: 120px; }
-          .photo-cell {
-            width: 70px;
+
+          /* ── Student table ──────────────────────── */
+          .student-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+          .student-row { border: 1.5px solid #334155; }
+          .student-row + .student-row { border-top: none; }
+          .student-cell { vertical-align: top; padding: 6px 7px; }
+          .student-left { width: 54%; border-right: 1px solid #334155; }
+          .student-right { width: 44%; }
+
+          .sno {
+            display: inline-block;
+            background: #1e3a5f;
+            color: #fff;
+            font-size: 7pt;
+            font-weight: 700;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            line-height: 16px;
             text-align: center;
-            padding: 4px;
-            border-left: 1px solid #000;
-            border-right: 1px solid #000;
+            margin-right: 4px;
+            vertical-align: middle;
+          }
+
+          .field-row { margin-bottom: 4px; }
+          .field-label {
+            font-size: 7.5pt;
+            color: #64748b;
+            min-width: 88px;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+          }
+          .field-value {
+            font-size: 9pt;
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 1px solid #cbd5e1;
+            display: inline-block;
+            min-width: 110px;
+            line-height: 1.4;
+          }
+
+          /* ── Photo cell ─────────────────────────── */
+          .photo-cell {
+            width: 72px;
+            text-align: center;
+            padding: 5px 4px;
+            border-left: 1px solid #334155;
+            border-right: 1px solid #334155;
             vertical-align: top;
           }
           .photo-box {
-            width: 60px;
-            height: 75px;
-            border: 1px solid #aaa;
+            width: 62px;
+            height: 78px;
+            border: 1.5px solid #94a3b8;
+            border-radius: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: #f9f9f9;
+            background: #f8fafc;
           }
           .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-          .photo-placeholder { font-size: 7pt; color: #aaa; text-align: center; }
-          .sig-label { font-size: 8pt; color: #333; margin-bottom: 3px; }
-          .sig-box { border: 1px solid #aaa; height: 35px; margin-top: 3px; }
-          .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid #000; padding-top: 5px; font-size: 9pt; }
+          .photo-placeholder { font-size: 7pt; color: #94a3b8; text-align: center; }
+
+          /* ── Signature ──────────────────────────── */
+          .sig-label { font-size: 7.5pt; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px; }
+          .sig-box {
+            border: 1px solid #94a3b8;
+            border-radius: 2px;
+            height: 36px;
+            margin-top: 4px;
+            background: #fafafa;
+          }
+
+          /* ── Footer ─────────────────────────────── */
+          .footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            border-top: 1.5px solid #334155;
+            padding-top: 5px;
+            font-size: 8.5pt;
+            color: #0f172a;
+          }
           .footer-item { flex: 1; }
-          .error-box { background: #fff3cd; border: 1px solid #ffc107; padding: 16px; margin: 20px; border-radius: 6px; }
-          .empty-box { text-align: center; padding: 60px; color: #666; }
-          .debug-section { margin: 20px; padding: 16px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; font-size: 12px; }
-          .raw-fields { background: #272822; color: #f8f8f2; padding: 12px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+
+          /* ── Error / Empty ──────────────────────── */
+          .error-box {
+            max-width: 600px;
+            margin: 32px auto;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+            padding: 16px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+          }
+          .empty-box {
+            text-align: center;
+            padding: 80px 24px;
+            color: #94a3b8;
+          }
+          .empty-box h2 { color: #cbd5e1; margin-bottom: 8px; }
         `}</style>
       </Head>
 
-      <div className="no-print controls">
-        <button onClick={() => window.print()}>🖨️ Print Attendance Sheet</button>
-        <button onClick={() => window.location.reload()}>🔄 Refresh Data</button>
-        <span className="meta">
-          {error
-            ? `❌ Error: ${error}`
-            : `✅ ${total} student${total !== 1 ? 's' : ''} loaded`}
-        </span>
+      {/* Top bar */}
+      <div className="no-print topbar">
+        <div className="topbar-inner">
+          <div className="topbar-title">
+            {schoolName}
+            <span>Attendance Sheet</span>
+          </div>
+          <div className="topbar-actions">
+            <span className={`badge ${error ? 'badge-err' : ''}`}>
+              {error ? `Error` : `${total} students`}
+            </span>
+            <button className="btn btn-secondary" onClick={() => window.location.reload()}>
+              ↺ Refresh
+            </button>
+            <button className="btn btn-primary" onClick={() => window.print()}>
+              🖨 Print
+            </button>
+          </div>
+        </div>
       </div>
 
       {error && (
-        <div className="error-box no-print">
-          <strong>API Error:</strong> {error}
+        <div className="page-wrap no-print">
+          <div className="error-box">
+            <strong>Error:</strong> {error}
+          </div>
         </div>
       )}
 
       {!error && total === 0 && (
-        <div className="empty-box no-print">
-          <p>No students found for entity <code>{process.env.NEXT_PUBLIC_ENTITY_ID}</code> / session <code>{process.env.NEXT_PUBLIC_SESSION}</code>.</p>
-          <p>Check that the ENTITY_ID and SESSION environment variables are correct.</p>
+        <div className="page-wrap no-print">
+          <div className="empty-box">
+            <h2>No students found</h2>
+            <p>No admission records for session 2027-28.</p>
+          </div>
         </div>
       )}
 
-      {pages.map((pageStudents, pageIdx) => (
-        <div
-          key={pageIdx}
-          className={`page ${pageIdx < pages.length - 1 ? 'page-break' : ''}`}
-        >
-          {/* Header */}
-          <div className="school-header">
-            <div className="school-name">{schoolName}</div>
-            <div className="school-addr">{schoolAddress}</div>
-            <div className="school-web">{schoolWebsite}</div>
-          </div>
-          <div>
-            <span className="affiliation">{schoolAffiliation}</span>
-            <span className="exam-label">{examLabel}</span>
-          </div>
-          <div className="clear" />
-          <div className="sheet-title">ATTENDANCE SHEET</div>
+      <div className="page-wrap">
+        {pages.map((pageStudents, pageIdx) => (
+          <div
+            key={pageIdx}
+            className={`page ${pageIdx < pages.length - 1 ? 'page-break' : ''}`}
+          >
+            {/* School header */}
+            <div className="school-header">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={SCHOOL_LOGO} alt="logo" className="school-logo" />
+              <div className="school-info">
+                <div className="school-name">{schoolName}</div>
+                <div className="school-addr">{schoolAddress}</div>
+                <div className="school-web">{schoolWebsite}</div>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={SCHOOL_LOGO} alt="logo" className="school-logo" />
+            </div>
 
-          {/* Students */}
-          <table className="student-table">
-            <tbody>
-              {pageStudents.map((student) => (
-                <tr key={student._id} className="student-row">
-                  {/* Left: student details */}
-                  <td className="student-cell student-left">
-                    <div className="field-row">
-                      <span className="field-label">Roll No.</span>
-                      <span className="field-value">{getRollNo(student)}</span>
-                    </div>
-                    <div className="field-row">
-                      <span className="field-label">Candidate Name</span>
-                      <span className="field-value">{getName(student)}</span>
-                    </div>
-                    <div className="field-row">
-                      <span className="field-label">Father&apos;s Name</span>
-                      <span className="field-value">{getFatherName(student)}</span>
-                    </div>
-                    <div className="field-row">
-                      <span className="field-label">School</span>
-                      <span className="field-value" style={{ wordBreak: 'break-word', maxWidth: 180 }}>{getSchool(student)}</span>
-                    </div>
-                    <div className="field-row">
-                      <span className="field-label">Class Applied</span>
-                      <span className="field-value">{getCourse(student)}</span>
-                    </div>
-                  </td>
+            <div className="meta-row">
+              <span>{schoolAffiliation}</span>
+              <span>{examLabel}</span>
+            </div>
 
-                  {/* Photo */}
-                  <td className="photo-cell">
-                    <div className="photo-box">
-                      {getPhoto(student) ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={getPhoto(student)} alt="photo" />
-                      ) : (
-                        <div className="photo-placeholder">Photo</div>
-                      )}
-                    </div>
-                  </td>
+            <div className="sheet-title">Attendance Sheet</div>
 
-                  {/* Right: address + signature */}
-                  <td className="student-cell student-right">
-                    <div className="field-row">
-                      <span className="field-label">Place</span>
-                      <span className="field-value" style={{ wordBreak: 'break-word', maxWidth: 150 }}>{getAddress(student)}</span>
-                    </div>
-                    <div className="field-row">
-                      <span className="field-label">Mobile</span>
-                      <span className="field-value">{getMobile(student)}</span>
-                    </div>
-                    <div className="field-row">
-                      <span className="sig-label">Candidate Signature</span>
-                      <div className="sig-box" />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            {/* Students */}
+            <table className="student-table">
+              <tbody>
+                {pageStudents.map((student, idx) => (
+                  <tr key={student._id} className="student-row">
+                    <td className="student-cell student-left">
+                      <div className="field-row">
+                        <span className="sno">{pageIdx * 4 + idx + 1}</span>
+                        <span className="field-label">Roll No.</span>
+                        <span className="field-value">{getRollNo(student)}</span>
+                      </div>
+                      <div className="field-row">
+                        <span className="field-label">Candidate Name</span>
+                        <span className="field-value">{getName(student)}</span>
+                      </div>
+                      <div className="field-row">
+                        <span className="field-label">Father&apos;s Name</span>
+                        <span className="field-value">{getFatherName(student)}</span>
+                      </div>
+                      <div className="field-row">
+                        <span className="field-label">School</span>
+                        <span className="field-value" style={{ wordBreak: 'break-word', maxWidth: 175 }}>{getSchool(student)}</span>
+                      </div>
+                      <div className="field-row">
+                        <span className="field-label">Class Applied</span>
+                        <span className="field-value">{getCourse(student)}</span>
+                      </div>
+                    </td>
 
-          {/* Footer */}
-          <div className="footer-row">
-            <div className="footer-item">Present : ______</div>
-            <div className="footer-item" style={{ textAlign: 'center' }}>Absent : ______</div>
-            <div className="footer-item" style={{ textAlign: 'center' }}>Invigilator Signature</div>
-            <div className="footer-item" style={{ textAlign: 'right' }}>
-              Page {pageIdx + 1} of {pages.length}
+                    <td className="photo-cell">
+                      <div className="photo-box">
+                        {getPhoto(student) ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={getPhoto(student)} alt="photo" />
+                        ) : (
+                          <div className="photo-placeholder">Photo</div>
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="student-cell student-right">
+                      <div className="field-row">
+                        <span className="field-label">Place</span>
+                        <span className="field-value" style={{ wordBreak: 'break-word', maxWidth: 145 }}>{getAddress(student)}</span>
+                      </div>
+                      <div className="field-row">
+                        <span className="field-label">Mobile</span>
+                        <span className="field-value">{getMobile(student)}</span>
+                      </div>
+                      <div className="field-row" style={{ marginTop: 6 }}>
+                        <span className="sig-label">Candidate Signature</span>
+                        <div className="sig-box" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Footer */}
+            <div className="footer-row">
+              <div className="footer-item">Present : ____________</div>
+              <div className="footer-item" style={{ textAlign: 'center' }}>Absent : ____________</div>
+              <div className="footer-item" style={{ textAlign: 'center' }}>Invigilator Signature</div>
+              <div className="footer-item" style={{ textAlign: 'right' }}>
+                Page {pageIdx + 1} / {pages.length}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-
+        ))}
+      </div>
     </>
   );
 }
