@@ -54,13 +54,14 @@ function getFatherName(s: Student): string {
 function getSchool(s: Student): string {
   return String(s.lastSchool || s.previousSchool || '—');
 }
-function gdriveDirect(url: string): string {
-  const m = url.match(/\/d\/([^/]+)\//);
-  return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url;
-}
 function getPhoto(s: Student): string {
   const raw = String(s.photo || s.passportPhoto || s.profilePhoto || s.studentPhoto || '');
-  return raw.includes('drive.google.com') ? gdriveDirect(raw) : raw;
+  if (!raw) return '';
+  if (raw.includes('drive.google.com')) {
+    const m = raw.match(/\/d\/([^/]+)\//);
+    return m ? `/api/photo?id=${m[1]}` : raw;
+  }
+  return raw;
 }
 function getAddress(s: Student): string {
   return String(s.address || s.permanentAddress || s.place || '—');
