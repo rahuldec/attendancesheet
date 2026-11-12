@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const API_URL = process.env.ADMISSION_API_URL || 'https://admission-api.odpay.in';
-const MOBILE = process.env.MOBILE || '8950572190';
-const PASSWORD = process.env.PASSWORD || 'mvrs2';
+const MOBILE = process.env.MOBILE || '5533989898';
+const PASSWORD = process.env.PASSWORD || '5533989898';
 const ENTITY_ID = process.env.ENTITY_ID || '69ca46dfa7f858000f1867ff';
-const SESSION = process.env.SESSION || '2026-27';
+const SESSION = process.env.SESSION || '2026-2027';
 
 async function getToken(): Promise<string> {
   const res = await fetch(`${API_URL}/login`, {
