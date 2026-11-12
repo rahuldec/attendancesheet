@@ -4,7 +4,7 @@ const API_URL = process.env.ADMISSION_API_URL || 'https://admission-api.odpay.in
 const MOBILE = process.env.MOBILE || '5533989898';
 const PASSWORD = process.env.PASSWORD || '5533989898';
 const ENTITY_ID = process.env.ENTITY_ID || '69ca46dfa7f858000f1867ff';
-const SESSION = process.env.SESSION || '2026-2027';
+const SESSION = process.env.SESSION || '2027-28';
 
 async function getToken(): Promise<string> {
   const res = await fetch(`${API_URL}/login`, {
@@ -54,8 +54,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     students.sort((a: unknown, b: unknown) => {
       const aObj = a as Record<string, unknown>;
       const bObj = b as Record<string, unknown>;
-      const aNum = parseInt(String(aObj.applicationFormNumber || aObj.formNo || aObj.rollNo || 0), 10);
-      const bNum = parseInt(String(bObj.applicationFormNumber || bObj.formNo || bObj.rollNo || 0), 10);
+      const aNum = parseInt(String(aObj.applicationNumber || aObj.applicationFormNumber || aObj.formNo || aObj.rollNo || 0), 10);
+      const bNum = parseInt(String(bObj.applicationNumber || bObj.applicationFormNumber || bObj.formNo || bObj.rollNo || 0), 10);
       return aNum - bNum;
     });
 

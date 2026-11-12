@@ -3,24 +3,30 @@ import Head from 'next/head';
 
 interface Student {
   _id: string;
+  applicationNumber?: string | number;
   applicationFormNumber?: string;
   formNo?: string;
   rollNo?: string;
+  sourceId?: string;
   name?: string;
   candidateName?: string;
   fatherName?: string;
-  previousSchool?: string;
   lastSchool?: string;
-  passportPhoto?: string;
+  previousSchool?: string;
   photo?: string;
+  passportPhoto?: string;
   profilePhoto?: string;
   studentPhoto?: string;
-  permanentAddress?: string;
   address?: string;
+  permanentAddress?: string;
   place?: string;
+  phone?: string;
   mobile?: string;
+  fatherMobile?: string;
   mobileNo?: string;
   contactNo?: string;
+  stream?: string;
+  course?: string;
   [key: string]: unknown;
 }
 
@@ -37,7 +43,7 @@ interface Props {
 }
 
 function getRollNo(s: Student): string {
-  return String(s.applicationFormNumber || s.formNo || s.rollNo || '—');
+  return String(s.applicationNumber || s.applicationFormNumber || s.formNo || s.rollNo || s.sourceId || '—');
 }
 function getName(s: Student): string {
   return String(s.name || s.candidateName || '—');
@@ -46,16 +52,24 @@ function getFatherName(s: Student): string {
   return String(s.fatherName || '—');
 }
 function getSchool(s: Student): string {
-  return String(s.previousSchool || s.lastSchool || '—');
+  return String(s.lastSchool || s.previousSchool || '—');
+}
+function gdriveDirect(url: string): string {
+  const m = url.match(/\/d\/([^/]+)\//);
+  return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url;
 }
 function getPhoto(s: Student): string {
-  return String(s.passportPhoto || s.photo || s.profilePhoto || s.studentPhoto || '');
+  const raw = String(s.photo || s.passportPhoto || s.profilePhoto || s.studentPhoto || '');
+  return raw.includes('drive.google.com') ? gdriveDirect(raw) : raw;
 }
 function getAddress(s: Student): string {
-  return String(s.permanentAddress || s.address || s.place || '—');
+  return String(s.address || s.permanentAddress || s.place || '—');
 }
 function getMobile(s: Student): string {
-  return String(s.mobile || s.mobileNo || s.contactNo || '—');
+  return String(s.phone || s.mobile || s.fatherMobile || s.mobileNo || s.contactNo || '—');
+}
+function getCourse(s: Student): string {
+  return String(s.stream || s.course || '—');
 }
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -235,6 +249,10 @@ export default function Home({
                       <span className="field-label">School</span>
                       <span className="field-value" style={{ wordBreak: 'break-word', maxWidth: 180 }}>{getSchool(student)}</span>
                     </div>
+                    <div className="field-row">
+                      <span className="field-label">Class Applied</span>
+                      <span className="field-value">{getCourse(student)}</span>
+                    </div>
                   </td>
 
                   {/* Photo */}
@@ -297,7 +315,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const MOBILE = process.env.MOBILE || '5533989898';
   const PASSWORD = process.env.PASSWORD || '5533989898';
   const ENTITY_ID = process.env.ENTITY_ID || '69ca46dfa7f858000f1867ff';
-  const SESSION = process.env.SESSION || '2026-2027';
+  const SESSION = process.env.SESSION || '2027-28';
 
   const schoolName = process.env.SCHOOL_NAME || 'GITA NIKETAN AWASIYA VIDYALAYA';
   const schoolAddress = process.env.SCHOOL_ADDRESS || 'Salarpur Road, Kurukshetra';
@@ -337,8 +355,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
     // Sort by roll number
     students.sort((a, b) => {
-      const aNum = parseInt(String(a.applicationFormNumber || a.formNo || a.rollNo || 0), 10);
-      const bNum = parseInt(String(b.applicationFormNumber || b.formNo || b.rollNo || 0), 10);
+      const aNum = parseInt(String(a.applicationNumber || a.applicationFormNumber || a.formNo || a.rollNo || 0), 10);
+      const bNum = parseInt(String(b.applicationNumber || b.applicationFormNumber || b.formNo || b.rollNo || 0), 10);
       return aNum - bNum;
     });
 
