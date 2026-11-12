@@ -293,17 +293,17 @@ export default function Home({
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const API_URL = process.env.ADMISSION_API_URL!;
-  const MOBILE = process.env.MOBILE!;
-  const PASSWORD = process.env.PASSWORD!;
-  const ENTITY_ID = process.env.ENTITY_ID!;
-  const SESSION = process.env.SESSION!;
+  const API_URL = process.env.ADMISSION_API_URL || 'https://admission-api.odpay.in';
+  const MOBILE = process.env.MOBILE || '8950572190';
+  const PASSWORD = process.env.PASSWORD || 'mvrs2';
+  const ENTITY_ID = process.env.ENTITY_ID || '69ca46dfa7f858000f1867ff';
+  const SESSION = process.env.SESSION || '2026-27';
 
-  const schoolName = process.env.SCHOOL_NAME || 'SCHOOL NAME';
-  const schoolAddress = process.env.SCHOOL_ADDRESS || '';
-  const schoolWebsite = process.env.SCHOOL_WEBSITE || '';
-  const schoolAffiliation = process.env.SCHOOL_AFFILIATION || '';
-  const examLabel = process.env.EXAM_LABEL || '';
+  const schoolName = process.env.SCHOOL_NAME || 'GITA NIKETAN AWASIYA VIDYALAYA';
+  const schoolAddress = process.env.SCHOOL_ADDRESS || 'Salarpur Road, Kurukshetra';
+  const schoolWebsite = process.env.SCHOOL_WEBSITE || 'www.gitaniketan.org';
+  const schoolAffiliation = process.env.SCHOOL_AFFILIATION || 'Affiliated to CBSE';
+  const examLabel = process.env.EXAM_LABEL || 'Entrance Exam-2026-27';
 
   try {
     // Login
