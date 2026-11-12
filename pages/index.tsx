@@ -39,7 +39,6 @@ interface Props {
   schoolWebsite: string;
   schoolAffiliation: string;
   examLabel: string;
-  rawFields: string[];
 }
 
 function getRollNo(s: Student): string {
@@ -90,7 +89,6 @@ export default function Home({
   schoolWebsite,
   schoolAffiliation,
   examLabel,
-  rawFields,
 }: Props) {
   const pages = chunkArray(students, 4);
 
@@ -200,12 +198,6 @@ export default function Home({
         <div className="empty-box no-print">
           <p>No students found for entity <code>{process.env.NEXT_PUBLIC_ENTITY_ID}</code> / session <code>{process.env.NEXT_PUBLIC_SESSION}</code>.</p>
           <p>Check that the ENTITY_ID and SESSION environment variables are correct.</p>
-          {rawFields.length > 0 && (
-            <div className="debug-section" style={{ textAlign: 'left', marginTop: 20 }}>
-              <strong>Sample student field names (from first record):</strong>
-              <pre className="raw-fields">{rawFields.join('\n')}</pre>
-            </div>
-          )}
         </div>
       )}
 
@@ -300,13 +292,6 @@ export default function Home({
         </div>
       ))}
 
-      {/* Debug: raw fields (no-print) */}
-      {!error && total > 0 && rawFields.length > 0 && (
-        <div className="no-print debug-section">
-          <strong>API field names (first student):</strong>
-          <pre className="raw-fields">{rawFields.join('\n')}</pre>
-        </div>
-      )}
     </>
   );
 }
@@ -361,8 +346,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
       return aNum - bNum;
     });
 
-    const rawFields = students.length > 0 ? Object.keys(students[0]) : [];
-
     return {
       props: {
         students,
@@ -372,7 +355,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
         schoolWebsite,
         schoolAffiliation,
         examLabel,
-        rawFields,
       },
     };
   } catch (err: unknown) {
@@ -387,7 +369,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
         schoolWebsite,
         schoolAffiliation,
         examLabel,
-        rawFields: [],
       },
     };
   }
